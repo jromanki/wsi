@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
+import numpy
 
 
 class Solver(ABC):
     """A solver. It may be initialized with some hyperparameters."""
 
-    @abstractmethod
+    @abstractmethod # marks methods that must be overridden.
     def get_parameters(self):
         """Returns a dictionary of hyperparameters"""
         ...
@@ -17,3 +18,11 @@ class Solver(ABC):
         Returns the solution and may return additional info.
         """
         ...
+
+class GradientDescentSolver(Solver):
+    
+    def get_parametrs(self):
+        pass
+
+    def solve(self):
+        pass
