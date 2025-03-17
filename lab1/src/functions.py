@@ -9,7 +9,7 @@ def f2(x_args: np.ndarray) -> float:
     return (x1-2)**4 + (x2+3)**4 + 2 * (x1-2)**2 * (x2+3)**2
 
 def grad_f1(x_args: np.ndarray) ->  np.ndarray:
-    x = x_args[0]
+    x = np.float64(x_args[0])
     return np.array([40*x**3 + 9*x**2 - 60*x + 10])
 
 def grad_f2(x_args: np.ndarray) ->  np.ndarray:

@@ -3,7 +3,7 @@ import numpy as np
 from typing import Callable, Dict, Any
 
 class GradientDescentSolver(Solver):
-    def __init__(self, beta: float = 0.001, eps: float = 0.00001, max_iter: int = 10000):
+    def __init__(self, beta: float = 0.0001, eps: float = 0.0000001, max_iter: int = 10000):
         self.beta = beta
         self.eps = eps
         self.max_iter = max_iter
@@ -15,7 +15,15 @@ class GradientDescentSolver(Solver):
 
     def solve(self, x_init: np.ndarray, grad_func: Callable[[np.ndarray], np.ndarray]):
         x = x_init
-        for _ in range(100): # change to while !stop later
+        i = 0
+        while True:
+            last_x = x
             d = grad_func(x)
             x = x - self.beta * d
-        return x
+            if np.all(abs(x - last_x) < self.eps):
+                # print('Found a solution (change smaller than eps)')
+                return x, i
+            if i > self.max_iter:
+                # print('Iterations exceeded max iteration number')
+                return np.array(x), i
+            i += 1
