@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import numpy
 
 
 class Solver(ABC):
@@ -18,11 +17,3 @@ class Solver(ABC):
         Returns the solution and may return additional info.
         """
         ...
-
-class GradientDescentSolver(Solver):
-    
-    def get_parametrs(self):
-        pass
-
-    def solve(self):
-        pass
