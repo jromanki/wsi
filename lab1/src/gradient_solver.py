@@ -20,7 +20,7 @@ class GradientDescentSolver(Solver):
             last_x = x
             d = grad_func(x)
             x = x - self.beta * d
-            if np.all(abs(x - last_x) < self.eps):
+            if np.all(abs(x - last_x) < self.eps): # difference in position of both coordinates
                 # print('Found a solution (change smaller than eps)')
                 return x, i
             if i > self.max_iter:
