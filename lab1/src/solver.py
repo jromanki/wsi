@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class Solver(ABC):
     """A solver. It may be initialized with some hyperparameters."""
 
-    @abstractmethod
+    @abstractmethod # marks methods that must be overridden.
     def get_parameters(self):
         """Returns a dictionary of hyperparameters"""
         ...
