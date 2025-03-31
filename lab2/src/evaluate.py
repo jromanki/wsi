@@ -36,9 +36,11 @@ def heatmap(x, size=20):
 
 def visualize(x, size=20):
     gain, colors = heatmap(x, size)
-    plt.imshow(colors, cmap="viridis_r")
-    plt.title(f"Gain value = {gain}")
+    plt.imshow(colors, cmap="viridis")
+    # plt.imshow(colors, cmap="plasma")
+    plt.title(f"Solver's final score = {gain}")
+    plt.suptitle("Yellow tiles - object (0 pts); Green tiles - object's \n neighbors (1 pts); Purple tiles - free (0 pts)", y=0, fontsize=10)
+    plt.tight_layout()
     plt.xticks(range(size))
     plt.yticks(range(size))
-    plt.colorbar()
     plt.show()
