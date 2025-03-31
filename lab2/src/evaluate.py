@@ -26,18 +26,17 @@ def evaluate(x, size=20):
 def heatmap(x, size=20):
     assert np.shape(x)[-1] == size * size
     grid = np.cast[np.int_](np.reshape(x, (-1, size, size)))
+    points = np.minimum(
+    shift_r(grid) + shift_l(grid) + shift_t(grid) + shift_b(grid),
+    1 - grid
+    )
     heatmap = 1-(0.5*(shift_r(grid) + shift_l(grid) + shift_t(grid) + shift_b(grid)) + grid)[0]
-    return heatmap
+    return points.reshape(np.shape(x)).sum(-1), heatmap
 
 def visualize(x, size=20):
-    colors = heatmap(x)
+    gain, colors = heatmap(x)
     plt.imshow(colors, cmap="viridis")
-    plt.title(f"Gain value = {evaluate(x)}")
+    plt.title(f"Gain value = {gain}")
     plt.xticks(range(size))
     plt.yticks(range(size))
     plt.show()
-
-x = np.zeros(400)
-x[0] = 1
-x[23] = 1
-visualize(x)
