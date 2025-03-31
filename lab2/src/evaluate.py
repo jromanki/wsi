@@ -30,13 +30,15 @@ def heatmap(x, size=20):
     shift_r(grid) + shift_l(grid) + shift_t(grid) + shift_b(grid),
     1 - grid
     )
-    heatmap = 1-(0.5*(shift_r(grid) + shift_l(grid) + shift_t(grid) + shift_b(grid)) + grid)[0]
+    heatmap = grid[0] + 0.5*points[0] # 0.5 added ONLY FOR VISUALIZATION
+    # to differente between objects and points scored
     return points.reshape(np.shape(x)).sum(-1), heatmap
 
 def visualize(x, size=20):
-    gain, colors = heatmap(x)
-    plt.imshow(colors, cmap="viridis")
+    gain, colors = heatmap(x, size)
+    plt.imshow(colors, cmap="viridis_r")
     plt.title(f"Gain value = {gain}")
     plt.xticks(range(size))
     plt.yticks(range(size))
+    plt.colorbar()
     plt.show()
