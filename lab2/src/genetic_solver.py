@@ -41,11 +41,33 @@ class GeneticSolver(Solver):
         return np.array(selected)
 
     def __crossover(self, s):
-        end = []
+        offsprings = []
         temp_pair = []
-        for idividual in s:
-            break
-        return 0
+        for individual in s:
+            if np.random.rand() < self.pc:
+                temp_pair.append(individual)
+                if len(temp_pair) == 2:
+                    cut = np.random.randint(len(individual))  # Random crossover point
+                    temp1 = temp_pair[0].copy()
+                    temp2 = temp_pair[1].copy()
+                    temp_pair[0][:cut] = temp2[:cut]
+                    temp_pair[1][:cut] = temp1[:cut]
+                    offsprings.append(temp_pair[0])
+                    offsprings.append(temp_pair[1])
+                    temp_pair = []
+            else:
+                offsprings.append(individual)  # If no crossover, keep individual unchanged
+        
+        if len(temp_pair) == 1:
+            offsprings.append(temp_pair[0]) # fixed bug that shortened list if the last individual was unpaired
+        return np.array(offsprings)
+
+    def __mutate(c):
+        for individual in c:
+            for gene in individual:
+                if np.random.rand() < self.pm:
+                    print(gene)
+
 
     def solve(self, init_func: Callable[[int], np.ndarray], gain_func: Callable[[np.ndarray], int],) -> np.ndarray:
         t = 0
@@ -55,6 +77,7 @@ class GeneticSolver(Solver):
         
         s = self.__roulette_select(p, q)
         c = self.__crossover(s)
+        self.__mutate(c)
 
         t += 1
         return p_best, q_best
