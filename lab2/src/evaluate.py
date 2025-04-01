@@ -39,7 +39,7 @@ def visualize(x, size=20):
     plt.imshow(colors, cmap="viridis")
     # plt.imshow(colors, cmap="plasma")
     plt.title(f"Solver's final score = {gain}")
-    plt.suptitle("Yellow tiles - object (0 pts); Green tiles - object's \n neighbors (1 pts); Purple tiles - free (0 pts)", y=0, fontsize=10)
+    plt.suptitle("Yellow tiles - object (0 pts); Green tiles - object \n neighboring tiles (1 pts); Purple tiles - free (0 pts)", y=0, fontsize=10)
     plt.tight_layout()
     plt.xticks(range(size))
     plt.yticks(range(size))

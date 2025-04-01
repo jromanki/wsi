@@ -2,6 +2,7 @@ import numpy as np
 from solver import Solver
 from typing import Callable, Dict, Any
 
+
 class GeneticSolver(Solver):
     """ A solver that uses genetic algorythm to solve the problem with variable
     hyperparameters """
@@ -17,21 +18,45 @@ class GeneticSolver(Solver):
                 'pc': self.pc,
                 'pm': self.pm}
 
-    def initialize_population(self, init_func, gain_func):
-        p, o = [], []
+    def __initialize_population(self, init_func):
+        return [init_func() for _ in range(self.mu)]
+
+    def __evaluate_population(self, p, gain_func):
+        return [gain_func(p[i]) for i in range(self.mu)]
+
+    def __find_best(self, p, gain_func):
+        q = []
+        for i in range(self.mu):
+            q.append(gain_func(p[i]))
+        q_best = np.max(q)
+        return p[q.index(q_best)], q_best
+
+    def __roulette_select(self, p, q):
+        selected = []
+        quality_sum = np.sum(q)
+        probabilities = np.array(q) / quality_sum
         for _ in range(self.mu):
-            x = init_func()
-            p.append(x)
-            o.append(gain_func(x))
-        return p, o
+            p_index = np.random.choice(len(p), p=probabilities)
+            selected.append(p[p_index])
+        return np.array(selected)
 
-    def find_best(self, p, o):
-        o_max = np.max(o)
-        return p[o.index(o_max)], o_max
+    def __crossover(self, s):
+        end = []
+        temp_pair = []
+        for idividual in s:
+            break
+        return 0
 
-    def solve(self, init_func: Callable[[int], np.ndarray],
-            gain_func: Callable[[np.ndarray], int],) -> np.ndarray:
+    def solve(self, init_func: Callable[[int], np.ndarray], gain_func: Callable[[np.ndarray], int],) -> np.ndarray:
         t = 0
-        p, o = self.initialize_population(init_func, gain_func)
-        p_max, o_max = self.find_best(p, o)
-        return p_max, o_max
+        p = self.__initialize_population(init_func)
+        q = self.__evaluate_population(p, gain_func)
+        p_best, q_best = self.__find_best(p, gain_func)
+        
+        s = self.__roulette_select(p, q)
+        c = self.__crossover(s)
+
+        t += 1
+        return p_best, q_best
+
+
