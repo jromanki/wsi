@@ -28,9 +28,13 @@ class GeneticSolver(Solver):
         best_index = np.argmax(q)
         return p[best_index], q[best_index]
 
-    def __roulette_select(self, p, q):
-        quality_sum = np.sum(q)
-        probabilities = np.array(q) / quality_sum
+    def __roulette_select(self, p, q, offset=False):
+        if offset:
+            temp_q = q - min(q) # offset
+            quality_sum = np.sum(temp_q)
+            probabilities = np.array(temp_q) / quality_sum
+        else:
+            probabilities = np.array(q) / np.sum(q)
         selected_indexes = np.random.choice(len(p), size=self.mu, p=probabilities)
         return p[selected_indexes]
 
@@ -65,13 +69,14 @@ class GeneticSolver(Solver):
 
 
 
-    def solve(self, init_func: Callable[[int], np.ndarray], gain_func: Callable[[np.ndarray], int],) -> np.ndarray:
+    def solve(self, init_func: Callable[[int], np.ndarray], gain_func: Callable[[np.ndarray], int], offset: bool) -> np.ndarray:
+        all_q = []
         t = 0
         p = self.__initialize_population(init_func)
         q = self.__evaluate_population(p, gain_func)
         x_best, q_best = self.__find_best(p, q)
         while t < self.t_max:
-            s = self.__roulette_select(p, q)
+            s = self.__roulette_select(p, q, offset)
             m = self.__mutate(self.__crossover(s))
             q = self.__evaluate_population(m, gain_func)
             x_offspring_best, q_offspring_best = self.__find_best(m, q)
@@ -79,7 +84,8 @@ class GeneticSolver(Solver):
                 x_best = x_offspring_best
                 q_best = q_offspring_best
             p = m
+            all_q.append(q_best)
             t += 1
-        return x_best, q_best
+        return x_best, q_best, all_q
 
 
