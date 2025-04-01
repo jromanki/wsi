@@ -19,33 +19,27 @@ class GeneticSolver(Solver):
                 'pm': self.pm}
 
     def __initialize_population(self, init_func):
-        return [init_func() for _ in range(self.mu)]
+        return np.array([init_func() for _ in range(self.mu)])
 
     def __evaluate_population(self, p, gain_func):
-        return [gain_func(p[i]) for i in range(self.mu)]
+        return np.array([gain_func(p[i]) for i in range(self.mu)])
 
-    def __find_best(self, p, gain_func):
-        q = []
-        for i in range(self.mu):
-            q.append(gain_func(p[i]))
-        q_best = np.max(q)
-        return p[q.index(q_best)], q_best
+    def __find_best(self, p, q):
+        best_index = np.argmax(q)
+        return p[best_index], q[best_index]
 
     def __roulette_select(self, p, q):
-        selected = []
         quality_sum = np.sum(q)
         probabilities = np.array(q) / quality_sum
-        for _ in range(self.mu):
-            p_index = np.random.choice(len(p), p=probabilities)
-            selected.append(p[p_index])
-        return np.array(selected)
+        selected_indexes = np.random.choice(len(p), size=self.mu, p=probabilities)
+        return p[selected_indexes]
 
     def __crossover(self, s):
         offsprings = []
         temp_pair = []
         for individual in s:
             if np.random.rand() < self.pc:
-                temp_pair.append(individual)
+                temp_pair.append(individual.copy())
                 if len(temp_pair) == 2:
                     cut = np.random.randint(len(individual))  # Random crossover point
                     temp1 = temp_pair[0].copy()
@@ -62,24 +56,30 @@ class GeneticSolver(Solver):
             offsprings.append(temp_pair[0]) # fixed bug that shortened list if the last individual was unpaired
         return np.array(offsprings)
 
-    def __mutate(c):
+    def __mutate(self, c):
         for individual in c:
-            for gene in individual:
+            for i in range(len(individual)):
                 if np.random.rand() < self.pm:
-                    print(gene)
+                    individual[i] = (individual[i] + 1) % 2 # negate a bit
+        return c
+
 
 
     def solve(self, init_func: Callable[[int], np.ndarray], gain_func: Callable[[np.ndarray], int],) -> np.ndarray:
         t = 0
         p = self.__initialize_population(init_func)
         q = self.__evaluate_population(p, gain_func)
-        p_best, q_best = self.__find_best(p, gain_func)
-        
-        s = self.__roulette_select(p, q)
-        c = self.__crossover(s)
-        self.__mutate(c)
-
-        t += 1
-        return p_best, q_best
+        x_best, q_best = self.__find_best(p, q)
+        while t < self.t_max:
+            s = self.__roulette_select(p, q)
+            m = self.__mutate(self.__crossover(s))
+            q = self.__evaluate_population(m, gain_func)
+            x_offspring_best, q_offspring_best = self.__find_best(m, q)
+            if (q_offspring_best > q_best):
+                x_best = x_offspring_best
+                q_best = q_offspring_best
+            p = m
+            t += 1
+        return x_best, q_best
 
 
