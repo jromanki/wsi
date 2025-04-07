@@ -4,7 +4,7 @@ from typing import Dict, Any
 
 class RandomSolver(Solver):
     """ A solver that returns random solution to the problem"""
-    # note: this solver is used as initialization solver in GeneticSolver's solve method
+    # note: this solver is also used as initialization solver in GeneticSolver's solve method
     def __init__(self, size: int = 20):
         self.size = size
 

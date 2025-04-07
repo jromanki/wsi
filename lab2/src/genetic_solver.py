@@ -18,11 +18,12 @@ class GeneticSolver(Solver):
                 'pc': self.pc,
                 'pm': self.pm}
 
-    def __initialize_population(self, init_func):
-        return np.array([init_func() for _ in range(self.mu)])
+    def __initialize_population(self, init_solver):
+        self.size = init_solver.get_parameters()['size']
+        return np.array([init_solver.solve() for _ in range(self.mu)])
 
     def __evaluate_population(self, p, gain_func):
-        return np.array([gain_func(p[i]) for i in range(self.mu)])
+        return np.array([gain_func(p[i], self.size) for i in range(self.mu)])
 
     def __find_best(self, p, q):
         best_index = np.argmax(q)
@@ -57,7 +58,7 @@ class GeneticSolver(Solver):
                 offsprings.append(individual)  # If no crossover, keep individual unchanged
         
         if len(temp_pair) == 1:
-            offsprings.append(temp_pair[0]) # fixed bug that shortened list if the last individual was unpaired
+            offsprings.append(temp_pair[0]) # Fixed bug that shortened list if the last individual was unpaired
         return np.array(offsprings)
 
     def __mutate(self, c):
@@ -67,12 +68,10 @@ class GeneticSolver(Solver):
                     individual[i] = (individual[i] + 1) % 2 # negate a bit
         return c
 
-
-
-    def solve(self, init_func: Callable[[int], np.ndarray], gain_func: Callable[[np.ndarray], int], offset: bool) -> np.ndarray:
+    def solve(self, init_solver, gain_func: Callable[[np.ndarray], int], offset: bool) -> np.ndarray:
         all_q = []
         t = 0
-        p = self.__initialize_population(init_func)
+        p = self.__initialize_population(init_solver)
         q = self.__evaluate_population(p, gain_func)
         x_best, q_best = self.__find_best(p, q)
         while t < self.t_max:
