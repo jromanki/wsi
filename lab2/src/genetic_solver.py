@@ -32,10 +32,15 @@ class GeneticSolver(Solver):
     def __roulette_select(self, p, q, offset=False):
         if offset:
             temp_q = q - min(q) # offset
-            quality_sum = np.sum(temp_q)
-            probabilities = np.array(temp_q) / quality_sum
         else:
-            probabilities = np.array(q) / np.sum(q)
+            temp_q = q
+        if not np.all(temp_q == 0):
+            quality_sum = np.sum(temp_q)
+        else:
+            # handling edge case when all q's have the same value
+            temp_q = np.ones(len(q)) # ensuring all p(q) sums to 1
+            quality_sum = len(q)
+        probabilities = np.array(temp_q) / quality_sum
         selected_indexes = np.random.choice(len(p), size=self.mu, p=probabilities)
         return p[selected_indexes]
 
