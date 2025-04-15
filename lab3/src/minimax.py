@@ -24,32 +24,32 @@ class Minimax_Player():
                 best_moves.append(move)
         return random.choice(best_moves)
     
-    def minimax(self, node, depth, maximizingPlayer):
+    def minimax(self, node, parrent_node, depth, maximizingPlayer):
         if depth == 0 or node.is_finished():
-            return self.score(node.get_current_player(), node)
+            return self.score(parrent_node.get_current_player(), node)
 
         if maximizingPlayer:
             max_score = float('-inf')
             for move in node.get_moves():
-                score = self.minimax(node.make_move(move) , depth-1, False)
+                score = self.minimax(node.make_move(move), parrent_node, depth-1, False)
                 max_score = max(max_score, score)
             return max_score
 
         else:
             min_score = float('inf')
             for move in node.get_moves():
-                score = self.minimax(node.make_move(move) , depth-1, True)
+                score = self.minimax(node.make_move(move), parrent_node, depth-1, True)
                 min_score = min(min_score, score)
             return min_score
     
-    def minimax_ab(self, node, depth, a, b, maximizingPlayer):
+    def minimax_ab(self, node, parrent_node, depth, a, b, maximizingPlayer):
         if depth == 0 or node.is_finished():
-            return self.score(node.get_current_player(), node)
+            return self.score(parrent_node.get_current_player(), node)
 
         if maximizingPlayer:
             max_score = float('-inf')
             for move in node.get_moves():
-                score = self.minimax_ab(node.make_move(move), depth-1, a, b, False)
+                score = self.minimax_ab(node.make_move(move), node, depth-1, a, b, False)
                 max_score = max(max_score, score)
                 a = max(a, max_score)
                 if max_score >= b:
@@ -59,7 +59,7 @@ class Minimax_Player():
         else:
             min_score = float('inf')
             for move in node.get_moves():
-                score = self.minimax_ab(node.make_move(move), depth-1, a, b, True)
+                score = self.minimax_ab(node.make_move(move), node, depth-1, a, b, True)
                 min_score = min(min_score, score)
                 b = min(b, min_score)
                 if min_score <= a:
@@ -73,13 +73,13 @@ class Minimax_Player():
         if self.alphabeta:
             a, b = float('-inf'), float('inf')
             move_scores = [
-                (move, self.minimax_ab(node.state.make_move(move), depth, a, b, self.maximizingPlayer))
+                (move, self.minimax_ab(node.state.make_move(move), node, depth, a, b, self.maximizingPlayer))
                 for move in moves
             ]  # note that `state.make_move()` does not change the game state
 
         else:
             move_scores = [
-                (move, self.minimax(node.state.make_move(move), depth, self.maximizingPlayer))
+                (move, self.minimax(node.state.make_move(move), node, depth, self.maximizingPlayer))
                 for move in moves
             ]  # note that `state.make_move()` does not change the game state
 
@@ -121,6 +121,12 @@ def play_game(depth1, depth2, alphabeta):
     #     print('Draw!')
     # else:
     #     print('Winner: Player ' + winner.char)
-    return winner.char
+    if winner is None:
+        return 0
+    else:
+        if winner.char == '1':
+            return 1
+        elif winner.char == '2':
+            return 0
 
-play_game(1, 6, True)
+play_game(1, 5, True)
