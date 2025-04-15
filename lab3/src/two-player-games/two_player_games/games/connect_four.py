@@ -120,3 +120,32 @@ class ConnectFourState(State):
             return None
 
         return next(iter(fields))
+    
+    def _count_neighboring(self, start_coords: Tuple[int, int], move_coords: Tuple[int, int]) -> Optional[Player]:
+        p_char = self._other_player.char
+        inline = 0
+        for i in range(4):
+            curr_field = self.fields[start_coords[0] + move_coords[0] * i][start_coords[1] + move_coords[1] * i]
+            if (curr_field != None) and str(curr_field.char) == str(p_char):
+                inline += 1
+            else:
+                break
+        return inline
+
+    def score(self) -> int:
+        max_score = 0
+        for column_id in range(len(self.fields)):  # verticals
+            for start_row_id in range(len(self.fields[column_id]) - 3):
+                max_score = max(self._count_neighboring((column_id, start_row_id), (0, 1)), max_score)
+
+        for start_column_id in range(len(self.fields) - 3):  # horizontals
+            for row_id in range(len(self.fields[start_column_id])):
+                max_score = max(self._count_neighboring((start_column_id, row_id), (1, 0)), max_score)
+
+        for start_column_id in range(len(self.fields) - 3):  # diagonals
+            for start_row_id in range(len(self.fields[start_column_id]) - 3):
+                max_score = max(
+                    self._count_neighboring((start_column_id, start_row_id), (1, 1)),
+                    self._count_neighboring((start_column_id, start_row_id + 3), (1, -1)),
+                    max_score)
+        return max_score
