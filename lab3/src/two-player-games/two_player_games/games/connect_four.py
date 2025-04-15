@@ -130,6 +130,7 @@ class ConnectFourState(State):
                 inline += 1
             else:
                 break
+
         return inline
 
     def score(self, curr_player) -> int:
