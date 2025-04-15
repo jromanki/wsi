@@ -114,12 +114,13 @@ def play_game(depth1, depth2, alphabeta):
             game.make_move(p2.move_minimax(game))
 
         p1_turn = not p1_turn
-        print(game)
+        # print(game)
 
     winner = game.get_winner()
-    if winner is None:
-        print('Draw!')
-    else:
-        print('Winner: Player ' + winner.char)
+    # if winner is None:
+    #     print('Draw!')
+    # else:
+    #     print('Winner: Player ' + winner.char)
+    return winner.char
 
-play_game(5, 3, True)
+play_game(1, 6, True)
