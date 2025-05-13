@@ -30,3 +30,31 @@ def get_metrics(real, pred):
     }
 
     return metrics
+
+def roc_curve(y_true, y_prob):
+    y_true = np.array(y_true.reset_index(drop=True))
+
+    thresholds = np.linspace(0, 1, num=100)
+    fpr = []
+    tpr = []
+    
+
+    for threshold in thresholds:
+        # Classify based on threshold
+        y_pred = (y_prob >= threshold).astype(int)
+        
+        # Calculate the confusion matrix components
+        tp = np.sum((y_true == 1) & (y_pred == 1))  # True Positives
+        fp = np.sum((y_true == 0) & (y_pred == 1))  # False Positives
+        tn = np.sum((y_true == 0) & (y_pred == 0))  # True Negatives
+        fn = np.sum((y_true == 1) & (y_pred == 0))  # False Negatives
+        
+        # Calculate TPR (True Positive Rate) and FPR (False Positive Rate)
+        tpr_value = tp / (tp + fn) if (tp + fn) > 0 else 0  # Avoid division by zero
+        fpr_value = fp / (fp + tn) if (fp + tn) > 0 else 0  # Avoid division by zero
+        
+        # Append to lists
+        fpr.append(fpr_value)
+        tpr.append(tpr_value)
+    
+    return np.array(fpr), np.array(tpr), thresholds

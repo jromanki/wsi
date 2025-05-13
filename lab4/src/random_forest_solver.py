@@ -143,3 +143,22 @@ class RandomForestSolver(Solver):
             majority_predictions.append(most_common_prediction)
         
         return np.array(majority_predictions)
+    
+    def predict_proba(self, X):
+        X = np.array(X.reset_index(drop=True))
+        
+        predictions = []
+
+        # predictions from each tree
+        for tree in self.trees:
+            tree_predictions = []
+            for x in X:
+                tree_predictions.append(self._predict_sample(x, tree))
+            predictions.append(tree_predictions)
+        predictions = np.array(predictions).T
+
+        probabilities = []
+        for row in predictions:
+            probabilities.append(np.sum(row)/len(row))
+        
+        return np.array(probabilities)
