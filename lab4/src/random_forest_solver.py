@@ -13,6 +13,7 @@ class RandomForestSolver(Solver):
     def get_parameters(self):
         return {'n_estimators': self.n_estimators}
     
+    @staticmethod
     def _entropy(y):
         """Calculate entropy for integer class labels"""
         counts = np.bincount(y)
@@ -22,7 +23,7 @@ class RandomForestSolver(Solver):
     def _information_gain(self, X_col, y, value):
         # returns information gain for a specific value
         value_mask = X_col == value # True if  X_col[i] == value
-        not_value_mask = ~not_value_mask
+        not_value_mask = ~ value_mask
         
         n = len(y)
         n_value, n_not_value = np.sum(value_mask), np.sum(not_value_mask)
@@ -34,6 +35,7 @@ class RandomForestSolver(Solver):
         child_entropy = (n_value/n) * self._entropy(y[value_mask]) + (n_not_value/n) * self._entropy(y[not_value_mask])
         return parent_entropy - child_entropy
 
+    @staticmethod
     def _find_most_common(y):
         counts = Counter(y)
         most_common = counts.most_common(1)
@@ -101,16 +103,43 @@ class RandomForestSolver(Solver):
             X_sample = X[indices]
             y_sample = y[indices]
             
-            features = range(n_features) # indexing features
+            features = list(range(n_features)) # indexing features
             
             # Build tree using ID3
             tree = self._id3(X_sample, y_sample, features)
             self.trees.append(tree)
     
+    def _predict_sample(self, x, tree):
+        if isinstance(tree, dict):
+            if x[tree['feature']] == tree['value']:
+                return self._predict_sample(x, tree['left'])
+            else:
+                return self._predict_sample(x, tree['right'])
+        else:
+            return tree
+
     def predict(self, X):
         """
         Predict class for each row of X using majority voting
         X: pandas DataFrame (features)
         Returns: numpy array of predicted integer class labels
         """
-        pass
+        X = np.array(X.reset_index(drop=True))
+        
+        predictions = []
+
+        # predictions from each tree
+        for tree in self.trees:
+            tree_predictions = []
+            for x in X:
+                tree_predictions.append(self._predict_sample(x, tree))
+            predictions.append(tree_predictions)
+        predictions = np.array(predictions).T
+        
+        # majority vote
+        majority_predictions = []
+        for row in predictions:
+            most_common_prediction = self._find_most_common(row)
+            majority_predictions.append(most_common_prediction)
+        
+        return np.array(majority_predictions)
