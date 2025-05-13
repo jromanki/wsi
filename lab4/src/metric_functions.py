@@ -1,12 +1,11 @@
 import numpy as np
 
 def get_metrics(real, pred):
+    real = np.array(real.reset_index(drop=True))
+
     if len(real) != len(pred):
         print('error! arrays of unequal size')
         quit()
-
-    real = np.array(real.reset_index(drop=True))
-    pred = np.array(pred.reset_index(drop=True))
 
     tp, tn, fp, fn = 0, 0, 0, 0
     for i in range(len(real)):
