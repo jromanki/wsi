@@ -1,7 +1,7 @@
-import gymnasium as gym
 import numpy as np
 import random
 import time
+import gymnasium as gym
 
 env = gym.make('Taxi-v3')
 
@@ -15,7 +15,7 @@ max_steps = 100
 
 # Taxi game - 25 pos x 5 x 4
 q_table = np.zeros((env.observation_space.n, env.action_space.n))
-print(np.shape(q_table))
+# print(np.shape(q_table))
 
 def choose_action(state):
     if random.uniform(0, 1) < epsilon:
