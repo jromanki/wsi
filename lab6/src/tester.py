@@ -8,6 +8,7 @@ class Tester():
         self.episodes = episodes
         self.max_steps = max_steps
         self.env = gym.make('CliffWalking-v0')
+        # test_env = gym.make('Taxi-v3')
 
     def reset_f(self):
         state, _ = self.env.reset()
@@ -54,6 +55,7 @@ class Tester():
 
     def render(self, q_table):
         test_env = gym.make('CliffWalking-v0', render_mode="rgb_array")
+        # test_env = gym.make('Taxi-v3', render_mode="rgb_array")
         frames = []
         
         for episode in range(5):
