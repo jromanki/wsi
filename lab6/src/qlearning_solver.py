@@ -7,9 +7,9 @@ class QLearningSolver:
                  epsilon_decay=0.995, min_epsilon=0.01):
         
         # hyperparameter initialisation
-        self.alpha = alpha
-        self.gamma = gamma
-        self.epsilon = epsilon
+        self.alpha = alpha      # learning rate - how important new info is
+        self.gamma = gamma      # discount factor - how important future rewards are
+        self.epsilon = epsilon  # exploration rate  - randomness 1 - completly random
         self.epsilon_decay = epsilon_decay
         self.min_epsilon = min_epsilon
 
